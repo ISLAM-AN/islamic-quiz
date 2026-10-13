@@ -1,0 +1,9 @@
+Ilmkhoona-Web-Admin/
+  index.html                       Admin web UI, based on user's existing Supabase-connected index.html
+  assets/ilmkhona-logo.png         Logo asset
+  assets/ilmkhona-logo-generated.png  Generated logo asset
+  README-TG.md                     Tajik setup and limitations
+  README-RU.md                     Russian setup and limitations
+  supabase/001_admin_upgrade.sql   Migration for bilingual questions, PDF books and install telemetry
+  supabase/schema.sql              Earlier starter schema reference (review before use)
+  FILE-MAP.txt                     This file
