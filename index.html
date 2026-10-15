@@ -191,8 +191,9 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
       <button data-sec="regQ" type="button">Саволҳои оддӣ</button>
       <button data-sec="books" type="button">Китобҳои PDF</button>
       <button data-sec="duas" type="button">Дуоҳо</button>
-      <button data-sec="scan" type="button">Сканворд</button>
-      <button data-sec="cross" type="button">Кроссворд</button>
+      <button data-sec="filword" type="button">Филворд 15×15</button>
+      <button data-sec="cross" type="button">Кроссворд 15×15</button>
+      <button data-sec="scan" type="button">Сканворд (оддӣ)</button>
       <button data-sec="winners" type="button">Ғолибон / Мусобиқа</button>
       <button data-sec="installs" type="button">Насбҳо</button>
     </nav>
@@ -252,6 +253,26 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
     </section>
 
     <!-- Scanword -->
+    
+    <section id="sec-filword" class="sec hidden">
+      <p class="section-hint"><b>Филворд 15×15:</b> ҳар ҳуҷайраро пур кунед (ихтиёрӣ). Дар поён рӯйхати калимаҳо. Подсказка дар барнома = 1 танга. Обой/видео ихтиёрӣ.</p>
+      <div id="listFilword" class="list"></div>
+      <div class="panel" style="margin-top:14px">
+        <h2 style="color:var(--gold);font-size:18px">Муҳаррири филворд</h2>
+        <label>Унвон — тоҷикӣ<input id="fwTitleTg" value="Филворд"></label>
+        <label>Унвон — русский<input id="fwTitleRu" value="Филворд"></label>
+        <label>Андоза<select id="fwSize"><option>10</option><option selected>15</option><option>12</option></select></label>
+        <label>Ҳолат<select id="fwStatus"><option value="draft">Лоиҳа</option><option value="published">Нашр</option></select></label>
+        <label>Замина<select id="fwBgType"><option value="none">Нест</option><option value="image">Акс</option><option value="video">Видео</option></select></label>
+        <label>Файли замина<input id="fwBgFile" type="file" accept="image/*,video/*"></label>
+        <p class="muted" style="font-size:12px;margin:10px 0">Шабака: ҳар сатр = як қатор ҳарфҳо (бе фосила). Холиҳоро бо нуқта ё фосила гузоред.</p>
+        <label>Шабака (ҳар сатр grid_size ҳарф)<textarea id="fwGrid" rows="16" style="font-family:monospace;letter-spacing:3px"></textarea></label>
+        <label>Калимаҳо (ҳар сатр як калима)<textarea id="fwWords" rows="6" placeholder="ҚУРЪОН&#10;ҚИБЛА&#10;НАМОЗ"></textarea></label>
+        <button type="button" class="primary full" id="fwSave">Захираи филворд</button>
+        <p id="fwErr" class="err"></p>
+      </div>
+    </section>
+
     <section id="sec-scan" class="sec hidden">
       <p class="section-hint"><b>Сканворд:</b> як калима + як ишора. Дар барнома ҳарфи аввал бо «фонусча» (−1 танга) кушода мешавад.</p>
       <div id="listScan" class="list"></div>
@@ -259,7 +280,7 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
 
     <!-- Crossword -->
     <section id="sec-cross" class="sec hidden">
-      <p class="section-hint"><b>Кроссворд:</b> чанд калима бо самт (уфуқӣ/амудӣ) ва мавқеъ. Ҳар калима ишораи тоҷикӣ ва русӣ дорад.</p>
+      <p class="section-hint"><b>Кроссворд 15×15:</b> саволҳои рақамдор (1,2,3…) дар сари ҷавоб. Уфуқӣ/амудӣ. Подсказка = 1 танга. Обой/видео ихтиёрӣ.</p>
       <div id="listCross" class="list"></div>
     </section>
 
@@ -433,6 +454,8 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
         <label>Название — русский<input id="crossTitleRu" value="Кроссворд"></label>
         <label>Андозаи шабака<select id="crossSize"><option>8</option><option selected>10</option><option>12</option><option>15</option></select></label>
         <label>Ҳолат<select id="crossStatus"><option value="draft">Лоиҳа</option><option value="published">Нашр</option><option value="hidden">Пинҳон</option></select></label>
+        <label>Замина<select id="crossBgType"><option value="none">Нест</option><option value="image">Акс</option><option value="video">Видео</option></select></label>
+        <label>Файли замина<input id="crossBgFile" type="file" accept="image/*,video/*"></label>
         <label class="span2">Калимаҳо (ҳар сатр: ИШОРА_ТҶ | ИШОРА_РУ | ҶАВОБ | қатор | сутун | across/down)
           <textarea id="crossWords" rows="8" placeholder="Китоби осмонӣ | Небесная книга | ҚУРЪОН | 0 | 0 | across&#10;Самти намоз | Направление молитвы | ҚИБЛА | 2 | 0 | down"></textarea>
         </label>
@@ -551,13 +574,14 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
     if (el) el.classList.remove('hidden');
     document.querySelectorAll('#navTabs button').forEach(b => b.classList.toggle('active', b.dataset.sec === id));
     const labels = {
-      compQ: '＋ Саволи мусобиқа', regQ: '＋ Саволи оддӣ', books: '＋ Китоб',
+      compQ: '＋ Саволи мусобиқа', filword: '＋ Филворд', regQ: '＋ Саволи оддӣ', books: '＋ Китоб',
       duas: '＋ Дуо', scan: '＋ Сканворд', cross: '＋ Кроссворд',
       winners: '＋ Мусобиқа', installs: ''
     };
     $('btnNew').textContent = labels[id] || '＋ Илова';
     $('btnNew').classList.toggle('hidden', id === 'installs' || id === 'winners');
     if (id === 'winners') $('btnNew').classList.add('hidden');
+    if (id === 'filword') loadFilwords();
   }
   document.querySelectorAll('#navTabs button').forEach(b => b.onclick = () => showSec(b.dataset.sec));
   $('btnNew').onclick = () => {
@@ -565,6 +589,7 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
     else if (currentSec === 'regQ') openQ('regular');
     else if (currentSec === 'books') openBook();
     else if (currentSec === 'duas') openDua();
+    else if (currentSec === 'filword') { $('fwTitleTg').focus(); }
     else if (currentSec === 'scan') openScan();
     else if (currentSec === 'cross') openCross();
   };
@@ -596,8 +621,69 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
 
   // ─── Loaders ───────────────────────────────────────────────
   async function loadAll() {
-    await Promise.all([loadQuestions(), loadBooks(), loadDuas(), loadScans(), loadCrosses(), loadComps(), loadScores()]);
+    await Promise.all([loadQuestions(), loadBooks(), loadDuas(), loadScans(), loadCrosses(), loadComps(), loadScores(), loadFilwords()]);
   }
+
+  async function loadFilwords() {
+    try {
+      const r = await db.from('filword_puzzles').select('*').order('created_at',{ascending:false});
+      if (r.error) throw r.error;
+      const rows = r.data || [];
+      $('listFilword').innerHTML = rows.length ? rows.map(f => `
+        <article class="row-card"><div><strong>${esc(f.title_tg)}</strong>
+        <div class="meta"><span>${f.grid_size}×${f.grid_size}</span>
+        <span>${(f.words||[]).length} калима</span>
+        <span class="badge ${f.status==='published'?'published':''}">${esc(statusLabel(f.status))}</span></div></div>
+        <div class="actions">
+          <button class="small" data-fp="${f.id}" data-next="${f.status==='published'?'hidden':'published'}">${f.status==='published'?'Пинҳон':'Нашр'}</button>
+          <button class="small danger" data-fd="${f.id}">Нест</button>
+        </div></article>`).join('') : '<div class="empty"><h3>Филворд нест</h3></div>';
+      $('listFilword').querySelectorAll('[data-fp]').forEach(x => x.onclick = async () => {
+        await db.from('filword_puzzles').update({status:x.dataset.next}).eq('id', x.dataset.fp); loadFilwords();
+      });
+      $('listFilword').querySelectorAll('[data-fd]').forEach(x => x.onclick = async () => {
+        if (!confirm('Нест?')) return;
+        await db.from('filword_puzzles').delete().eq('id', x.dataset.fd); loadFilwords();
+      });
+    } catch(e) {
+      $('listFilword').innerHTML = '<div class="empty"><p class="err">'+esc(err(e))+'<br>SQL: 003_filword_crossword.sql</p></div>';
+    }
+  }
+  function buildEmptyGrid(n) {
+    return Array.from({length:n}, () => '.'.repeat(n)).join('\n');
+  }
+  $('fwSize') && ($('fwSize').onchange = () => {
+    const n = +$('fwSize').value;
+    if (!$('fwGrid').value.trim()) $('fwGrid').value = buildEmptyGrid(n);
+  });
+  if ($('fwGrid') && !$('fwGrid').value) $('fwGrid').value = buildEmptyGrid(15);
+  $('fwSave') && ($('fwSave').onclick = async () => {
+    $('fwErr').textContent = '';
+    try {
+      const n = +$('fwSize').value;
+      const lines = $('fwGrid').value.trim().split('\n').map(s => s.replace(/\s/g,'').toUpperCase());
+      if (lines.length !== n) throw Error('Шумораи сатрҳо бояд '+n+' бошад');
+      lines.forEach((l,i) => { if (l.length !== n) throw Error('Сатри '+(i+1)+' бояд '+n+' ҳарф дошта бошад'); });
+      const words = $('fwWords').value.trim().split('\n').map(s => s.trim().toUpperCase()).filter(Boolean);
+      if (!words.length) throw Error('Ҳадди ақал як калима');
+      const data = {
+        title_tg: $('fwTitleTg').value.trim() || 'Филворд',
+        title_ru: $('fwTitleRu').value.trim() || 'Филворд',
+        grid_size: n,
+        grid: lines,
+        words,
+        background_type: $('fwBgType').value,
+        status: $('fwStatus').value,
+        updated_at: new Date().toISOString()
+      };
+      const r = await db.from('filword_puzzles').insert(data);
+      if (r.error) throw r.error;
+      toast('Филворд захира шуд');
+      $('fwWords').value = '';
+      loadFilwords();
+    } catch(ex) { $('fwErr').textContent = err(ex); }
+  });
+
 
   async function loadQuestions() {
     try {
@@ -979,8 +1065,11 @@ footer{text-align:center;padding:18px;color:var(--muted);font-size:11px}
       const id = $('crossId').value || null;
       const words = $('crossWords').value.trim().split('\n').filter(Boolean).map(line => {
         const p = line.split('|').map(s => s.trim());
-        if (p.length < 6) throw Error('Ҳар сатр: ишора_тҷ | ишора_ру | ҷавоб | қатор | сутун | across/down');
-        return { clue_tg: p[0], clue_ru: p[1], answer: p[2].toUpperCase(), row: +p[3], col: +p[4], dir: p[5] === 'down' ? 'down' : 'across' };
+        if (p.length >= 7) {
+          return { num:+p[0], clue_tg:p[1], clue_ru:p[2], answer:p[3].toUpperCase(), row:+p[4], col:+p[5], dir:p[6]==='down'?'down':'across' };
+        }
+        if (p.length < 6) throw Error('Формат: рақам | ишора_тҷ | ишора_ру | ҷавоб | қатор | сутун | across/down');
+        return { num:0, clue_tg:p[0], clue_ru:p[1], answer:p[2].toUpperCase(), row:+p[3], col:+p[4], dir:p[5]==='down'?'down':'across' };
       });
       const data = {
         title_tg: $('crossTitleTg').value.trim(), title_ru: $('crossTitleRu').value.trim(),
